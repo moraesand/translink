@@ -7,15 +7,6 @@ from read_csv import ROUTE_MAP, STOP_MAP  # your preloaded maps
 # --- GTFS-Realtime feed URL ---
 url = f"https://gtfsapi.translink.ca/v3/gtfsrealtime?apikey={API_KEY}"
 
-# --- User input ---
-bus_stop_public = input("Enter public bus stop number (leave blank to see all): ").strip()
-bus_route = input("Enter bus route (leave blank to see all): ").strip()
-
-# Convert user stop_code → internal stop_id
-bus_stop_internal = STOP_MAP.get(bus_stop_public) if bus_stop_public else None
-
-print("Mapped public stop", bus_stop_public, "→ internal", bus_stop_internal)
-
 def bus_updates():
     """Fetch GTFS-Realtime feed and parse entities."""
     feed = gtfs_realtime_pb2.FeedMessage()
@@ -29,6 +20,15 @@ def bus_updates():
         return []
 
 while True:
+    # --- User input ---
+    bus_stop_public = input("Enter public bus stop number (leave blank to see all): ").strip()
+    bus_route = input("Enter bus route (leave blank to see all): ").strip()
+
+    # Convert user stop_code → internal stop_id
+    bus_stop_internal = STOP_MAP.get(bus_stop_public) if bus_stop_public else None
+
+    print("Mapped public stop", bus_stop_public, "→ internal", bus_stop_internal)
+
     print("\n--- Live Bus Arrivals ---")
     entities = bus_updates()
 
@@ -77,10 +77,10 @@ while True:
 
             readable = time.strftime("%H:%M:%S", time.localtime(timestamp))
 
-            print(f"Route {public_route} → Stop {bus_stop_public or stop_id} | ETA: {readable}")
+            print(f"Route {public_route} → Stop {bus_stop_public or stop_id} | ETA: {readable}\n")
             found_any = True
 
     if not found_any:
-        print("No matching realtime buses (bus may not have started yet).")
+        print("No matching realtime buses (bus may not have started yet).\n")
 
-    time.sleep(5)
+
